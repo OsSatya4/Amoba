@@ -1,0 +1,10 @@
+hu\unipg\amoba\model\Cell.class
+hu\unipg\amoba\Main.class
+hu\unipg\amoba\game\AiPlayer.class
+hu\unipg\amoba\model\Board.class
+hu\unipg\amoba\model\Move.class
+hu\unipg\amoba\model\Player.class
+hu\unipg\amoba\io\HighscoreDao.class
+hu\unipg\amoba\game\Game.class
+hu\unipg\amoba\io\BoardIO.class
+hu\unipg\amoba\model\Position.class
