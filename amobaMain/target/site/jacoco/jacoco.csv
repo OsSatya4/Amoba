@@ -1,0 +1,11 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+amobaMain,hu.unipg.amoba.model,Position,3,0,0,0,1,0,1,0,1,0
+amobaMain,hu.unipg.amoba.model,Move,3,0,0,0,1,0,1,0,1,0
+amobaMain,hu.unipg.amoba.model,Player,3,0,0,0,1,0,1,0,1,0
+amobaMain,hu.unipg.amoba.model,Board,3,0,0,0,1,0,1,0,1,0
+amobaMain,hu.unipg.amoba.model,Cell,3,0,0,0,1,0,1,0,1,0
+amobaMain,hu.unipg.amoba.io,BoardIO,3,0,0,0,1,0,1,0,1,0
+amobaMain,hu.unipg.amoba.io,HighscoreDao,3,0,0,0,1,0,1,0,1,0
+amobaMain,hu.unipg.amoba.game,AiPlayer,3,0,0,0,1,0,1,0,1,0
+amobaMain,hu.unipg.amoba.game,Game,3,0,0,0,1,0,1,0,1,0
+amobaMain,hu.unipg.amoba,Main,21,0,2,0,5,0,3,0,2,0
