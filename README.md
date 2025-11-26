@@ -1,6 +1,6 @@
 # Amőba (Gomoku) – Parancssoros Java játék
 
-## 🧩 Leírás
+## Leírás
 Ez a projekt egy **parancssoros Amőba (Gomoku)** játék, amelyet Java 21 és Maven segítségével készítettem.  
 A játék egy **NxM-es táblán** zajlik (alapértelmezés: 10x10).  
 A játékos `'x'`, a gép `'o'` jelet használja.  
@@ -14,14 +14,14 @@ A játék képes:
 
 ---
 
-## ⚙️ Követelmények
+## Követelmények
 - Java 21
 - Maven 3.9+
 - Git (opcionális, ha klónozni akarod)
 
 ---
 
-## 🏗️ Build
+## Build
 
 A projektet a gyökérkönyvtárban az alábbi paranccsal tudod buildelni:
 
