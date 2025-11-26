@@ -1,7 +1,6 @@
 package hu.unipg.amoba.model;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Board {
     private final int rows;
@@ -9,6 +8,7 @@ public class Board {
     private final Cell[][] grid;
 
     public Board(int rows, int cols) {
+
         if(cols<5||rows<5||cols>rows||rows>25) throw new IllegalArgumentException("5 <= M <= N <= 25");
         this.rows = rows;
         this.cols = cols;
@@ -49,29 +49,51 @@ public class Board {
     public boolean applyMove(Move move) {
         Position p = move.pos();
         int r = p.row(); int c = p.col();
-        checkBounds(r,c);
+
+        try {
+            checkBounds(r, c);
+        } catch (IndexOutOfBoundsException e) {
+            return false;
+        }
+
         if (!grid[r][c].isEmpty()) return false;
+
         if (isEmpty()) {
-            int midR = rows/2; int midC = cols/2;
-            if (!(r==midR && c==midC)) return false;
+            int midR = rows/2;
+            int midC = cols/2;
+
+            boolean rowOk = (r == midR) || (rows % 2 == 0 && r == midR - 1);
+            boolean colOk = (c == midC) || (cols % 2 == 0 && c == midC - 1);
+
+            if (!(rowOk && colOk)) return false;
+
         } else {
             boolean touches = false;
-            for (int dr=-1; dr<=1; dr++) for (int dc=-1; dc<=1; dc++) {
-                if (dr==0 && dc==0) continue;
-                int nr=r+dr, nc=c+dc;
-                if (nr>=0 && nc>=0 && nr<rows && nc<cols && !grid[nr][nc].isEmpty()) touches = true;
+            for (int dr=-1; dr<=1; dr++) {
+                for (int dc=-1; dc<=1; dc++) {
+                    if (dr==0 && dc==0) continue;
+                    int nr=r+dr, nc=c+dc;
+                    if (nr>=0 && nc>=0 && nr<rows && nc<cols && !grid[nr][nc].isEmpty()) {
+                        touches = true;
+                        break;
+                    }
+                }
             }
             if (!touches) return false;
         }
+
         grid[r][c].setOwner(move.player());
         return true;
     }
 
     public boolean isWinningMove(Move move) {
+        if (move == null) return false;
         Position p = move.pos();
         Player player = move.player();
         int r=p.row(), c=p.col();
+
         int[][] deltas = {{0,1},{1,0},{1,1},{1,-1}};
+
         for (var d : deltas) {
             int count = 1;
             count += countDir(r,c,d[0],d[1],player);
@@ -85,8 +107,16 @@ public class Board {
         int cnt=0;
         int nr=r+dr, nc=c+dc;
         while (nr>=0 && nc>=0 && nr<rows && nc<cols) {
-            Player owner = grid[nr][nc].getOwner();
-            if (owner == player) { cnt++; nr+=dr; nc+=dc; } else break;
+
+            if (grid[nr][nc] == null) break;
+
+            if (!grid[nr][nc].isEmpty() && grid[nr][nc].getOwner() == player) {
+                cnt++;
+                nr+=dr;
+                nc+=dc;
+            } else {
+                break;
+            }
         }
         return cnt;
     }
@@ -105,8 +135,12 @@ public class Board {
         }
 
         if (result.isEmpty() && isEmpty()) {
+
             int midR = rows/2, midC=cols/2;
             result.add(Position.of(midR,midC));
+            if (rows % 2 == 0) result.add(Position.of(midR-1, midC));
+            if (cols % 2 == 0) result.add(Position.of(midR, midC-1));
+            if (rows % 2 == 0 && cols % 2 == 0) result.add(Position.of(midR-1, midC-1));
         }
         return new ArrayList<>(result);
     }
@@ -130,8 +164,4 @@ public class Board {
         }
         return sb.toString();
     }
-
-
-
-
 }

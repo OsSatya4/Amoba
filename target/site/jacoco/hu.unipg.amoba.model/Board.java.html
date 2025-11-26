@@ -1,5 +1,168 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Board.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">amobaMain</a> &gt; <a href="index.source.html" class="el_package">hu.unipg.amoba.model</a> &gt; <span class="el_source">Board.java</span></div><h1>Board.java</h1><pre class="source lang-java linenums">package hu.unipg.amoba.model;
 
-<span class="nc" id="L3">public class Board {</span>
+import java.util.*;
+
+public class Board {
+    private final int rows;
+    private final int cols;
+    private final Cell[][] grid;
+
+<span class="fc" id="L10">    public Board(int rows, int cols) {</span>
+
+<span class="pc bpc" id="L12" title="1 of 8 branches missed.">        if(cols&lt;5||rows&lt;5||cols&gt;rows||rows&gt;25) throw new IllegalArgumentException(&quot;5 &lt;= M &lt;= N &lt;= 25&quot;);</span>
+<span class="fc" id="L13">        this.rows = rows;</span>
+<span class="fc" id="L14">        this.cols = cols;</span>
+<span class="fc" id="L15">        this.grid = new Cell[rows][cols];</span>
+<span class="fc bfc" id="L16" title="All 2 branches covered.">        for(int r=0;r&lt;rows;r++){</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">            for(int c=0;c&lt;cols;c++){</span>
+<span class="fc" id="L18">                grid[r][c] = new Cell();</span>
+            }
+        }
+<span class="fc" id="L21">    }</span>
+
+    public int getRows() {
+<span class="nc" id="L24">        return rows;</span>
+    }
+    public int getCols() {
+<span class="nc" id="L27">        return cols;</span>
+    }
+
+    public Optional&lt;Player&gt; getOwner(int r, int c){
+<span class="nc" id="L31">        checkBounds(r,c);</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        return grid[r][c].isEmpty() ? Optional.empty() : Optional.of(grid[r][c].getOwner());</span>
+    }
+
+    private void checkBounds(int r, int c){
+<span class="pc bpc" id="L36" title="4 of 8 branches missed.">        if (r&lt;0||c&lt;0||r&gt;=rows||c&gt;=cols) throw new IndexOutOfBoundsException();</span>
+<span class="fc" id="L37">    }</span>
+
+    public boolean isEmpty(){
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        for(int r=0; r&lt;rows;r++){</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">            for(int c=0;c&lt;cols;c++){</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">                if(!grid[r][c].isEmpty())</span>
+<span class="fc" id="L43">                    return false;</span>
+            }
+        }
+<span class="fc" id="L46">        return true;</span>
+    }
+
+    public boolean applyMove(Move move) {
+<span class="fc" id="L50">        Position p = move.pos();</span>
+<span class="fc" id="L51">        int r = p.row(); int c = p.col();</span>
+
+        try {
+<span class="fc" id="L54">            checkBounds(r, c);</span>
+<span class="nc" id="L55">        } catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L56">            return false;</span>
+<span class="fc" id="L57">        }</span>
+
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (!grid[r][c].isEmpty()) return false;</span>
+
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (isEmpty()) {</span>
+<span class="fc" id="L62">            int midR = rows/2;</span>
+<span class="fc" id="L63">            int midC = cols/2;</span>
+
+<span class="pc bpc" id="L65" title="2 of 6 branches missed.">            boolean rowOk = (r == midR) || (rows % 2 == 0 &amp;&amp; r == midR - 1);</span>
+<span class="pc bpc" id="L66" title="2 of 6 branches missed.">            boolean colOk = (c == midC) || (cols % 2 == 0 &amp;&amp; c == midC - 1);</span>
+
+<span class="pc bpc" id="L68" title="1 of 4 branches missed.">            if (!(rowOk &amp;&amp; colOk)) return false;</span>
+
+<span class="fc" id="L70">        } else {</span>
+<span class="fc" id="L71">            boolean touches = false;</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">            for (int dr=-1; dr&lt;=1; dr++) {</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">                for (int dc=-1; dc&lt;=1; dc++) {</span>
+<span class="fc bfc" id="L74" title="All 4 branches covered.">                    if (dr==0 &amp;&amp; dc==0) continue;</span>
+<span class="fc" id="L75">                    int nr=r+dr, nc=c+dc;</span>
+<span class="pc bpc" id="L76" title="2 of 10 branches missed.">                    if (nr&gt;=0 &amp;&amp; nc&gt;=0 &amp;&amp; nr&lt;rows &amp;&amp; nc&lt;cols &amp;&amp; !grid[nr][nc].isEmpty()) {</span>
+<span class="fc" id="L77">                        touches = true;</span>
+<span class="fc" id="L78">                        break;</span>
+                    }
+                }
+            }
+<span class="fc bfc" id="L82" title="All 2 branches covered.">            if (!touches) return false;</span>
+        }
+
+<span class="fc" id="L85">        grid[r][c].setOwner(move.player());</span>
+<span class="fc" id="L86">        return true;</span>
+    }
+
+    public boolean isWinningMove(Move move) {
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">        if (move == null) return false;</span>
+<span class="fc" id="L91">        Position p = move.pos();</span>
+<span class="fc" id="L92">        Player player = move.player();</span>
+<span class="fc" id="L93">        int r=p.row(), c=p.col();</span>
+
+<span class="fc" id="L95">        int[][] deltas = {{0,1},{1,0},{1,1},{1,-1}};</span>
+
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        for (var d : deltas) {</span>
+<span class="fc" id="L98">            int count = 1;</span>
+<span class="fc" id="L99">            count += countDir(r,c,d[0],d[1],player);</span>
+<span class="fc" id="L100">            count += countDir(r,c,-d[0],-d[1],player);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">            if (count &gt;= 4) return true;</span>
+        }
+<span class="nc" id="L103">        return false;</span>
+    }
+
+    private int countDir(int r,int c,int dr,int dc,Player player){
+<span class="fc" id="L107">        int cnt=0;</span>
+<span class="fc" id="L108">        int nr=r+dr, nc=c+dc;</span>
+<span class="pc bpc" id="L109" title="4 of 8 branches missed.">        while (nr&gt;=0 &amp;&amp; nc&gt;=0 &amp;&amp; nr&lt;rows &amp;&amp; nc&lt;cols) {</span>
+
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">            if (grid[nr][nc] == null) break;</span>
+
+<span class="pc bpc" id="L113" title="1 of 4 branches missed.">            if (!grid[nr][nc].isEmpty() &amp;&amp; grid[nr][nc].getOwner() == player) {</span>
+<span class="fc" id="L114">                cnt++;</span>
+<span class="fc" id="L115">                nr+=dr;</span>
+<span class="fc" id="L116">                nc+=dc;</span>
+            } else {
+                break;
+            }
+        }
+<span class="fc" id="L121">        return cnt;</span>
+    }
+
+    public List&lt;Position&gt; allEmptyNeighbors() {
+<span class="fc" id="L125">        Set&lt;Position&gt; result = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L126" title="All 4 branches covered.">        for (int r=0;r&lt;rows;r++) for (int c=0;c&lt;cols;c++) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">            if (!grid[r][c].isEmpty()) {</span>
+<span class="fc bfc" id="L128" title="All 4 branches covered.">                for (int dr=-1; dr&lt;=1; dr++) for (int dc=-1; dc&lt;=1; dc++) {</span>
+<span class="fc" id="L129">                    int nr=r+dr, nc=c+dc;</span>
+<span class="pc bpc" id="L130" title="4 of 10 branches missed.">                    if (nr&gt;=0 &amp;&amp; nc&gt;=0 &amp;&amp; nr&lt;rows &amp;&amp; nc&lt;cols &amp;&amp; grid[nr][nc].isEmpty()) {</span>
+<span class="fc" id="L131">                        result.add(Position.of(nr,nc));</span>
+                    }
+                }
+            }
+        }
+
+<span class="pc bpc" id="L137" title="3 of 4 branches missed.">        if (result.isEmpty() &amp;&amp; isEmpty()) {</span>
+
+<span class="nc" id="L139">            int midR = rows/2, midC=cols/2;</span>
+<span class="nc" id="L140">            result.add(Position.of(midR,midC));</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">            if (rows % 2 == 0) result.add(Position.of(midR-1, midC));</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">            if (cols % 2 == 0) result.add(Position.of(midR, midC-1));</span>
+<span class="nc bnc" id="L143" title="All 4 branches missed.">            if (rows % 2 == 0 &amp;&amp; cols % 2 == 0) result.add(Position.of(midR-1, midC-1));</span>
+        }
+<span class="fc" id="L145">        return new ArrayList&lt;&gt;(result);</span>
+    }
+
+    public List&lt;Position&gt; allEmptyCells(){
+<span class="nc" id="L149">        List&lt;Position&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L150" title="All 6 branches missed.">        for (int r=0;r&lt;rows;r++) for (int c=0;c&lt;cols;c++) if (grid[r][c].isEmpty()) out.add(Position.of(r,c));</span>
+<span class="nc" id="L151">        return out;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L156">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L157">        sb.append(&quot;   &quot;);</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        for (int c=0;c&lt;cols;c++) sb.append((char)('a'+c)).append(' ');</span>
+<span class="nc" id="L159">        sb.append('\n');</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">        for (int r=0;r&lt;rows;r++) {</span>
+<span class="nc" id="L161">            sb.append(String.format(&quot;%2d &quot;, r+1));</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">            for (int c=0;c&lt;cols;c++) sb.append(grid[r][c].toString()).append(' ');</span>
+<span class="nc" id="L163">            sb.append('\n');</span>
+        }
+<span class="nc" id="L165">        return sb.toString();</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

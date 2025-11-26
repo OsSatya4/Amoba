@@ -1,5 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HighscoreDao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">amobaMain</a> &gt; <a href="index.source.html" class="el_package">hu.unipg.amoba.io</a> &gt; <span class="el_source">HighscoreDao.java</span></div><h1>HighscoreDao.java</h1><pre class="source lang-java linenums">package hu.unipg.amoba.io;
 
-<span class="nc" id="L3">public class HighscoreDao {</span>
+import java.sql.*;
+
+
+public class HighscoreDao {
+
+    private static final String DB_URL = &quot;jdbc:h2:./gomoku_db&quot;;
+    private static final String USER = &quot;sa&quot;;
+    private static final String PASS = &quot;&quot;;
+
+<span class="nc" id="L12">    public HighscoreDao() {</span>
+
+<span class="nc" id="L14">        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);</span>
+<span class="nc" id="L15">             Statement stmt = conn.createStatement()) {</span>
+
+<span class="nc" id="L17">            String sql = &quot;CREATE TABLE IF NOT EXISTS HIGHSCORE &quot; +</span>
+                    &quot;(NAME VARCHAR(255) PRIMARY KEY, &quot; +
+                    &quot; WINS INTEGER DEFAULT 0)&quot;;
+<span class="nc" id="L20">            stmt.executeUpdate(sql);</span>
+
+<span class="nc" id="L22">        } catch (SQLException e) {</span>
+<span class="nc" id="L23">            System.err.println(&quot;Adatbázis inicializálási hiba: &quot; + e.getMessage());</span>
+<span class="nc" id="L24">        }</span>
+<span class="nc" id="L25">    }</span>
+
+    /**
+     * Növeli a játékos győzelmeinek számát eggyel.
+     * Ha még nem létezik a játékos, létrehozza.
+     */
+    public void recordWin(String playerName) {
+<span class="nc" id="L32">        String mergeSql = &quot;MERGE INTO HIGHSCORE (NAME, WINS) KEY (NAME) &quot; +</span>
+                &quot;VALUES (?, COALESCE((SELECT WINS FROM HIGHSCORE WHERE NAME = ?), 0) + 1)&quot;;
+
+<span class="nc" id="L35">        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);</span>
+<span class="nc" id="L36">             PreparedStatement pstmt = conn.prepareStatement(mergeSql)) {</span>
+
+<span class="nc" id="L38">            pstmt.setString(1, playerName);</span>
+<span class="nc" id="L39">            pstmt.setString(2, playerName);</span>
+<span class="nc" id="L40">            pstmt.executeUpdate();</span>
+<span class="nc" id="L41">            System.out.println(&quot;Eredmény mentve az adatbázisba.&quot;);</span>
+
+<span class="nc" id="L43">        } catch (SQLException e) {</span>
+<span class="nc" id="L44">            System.err.println(&quot;Hiba az eredmény mentésekor: &quot; + e.getMessage());</span>
+<span class="nc" id="L45">        }</span>
+<span class="nc" id="L46">    }</span>
+
+    /**
+     * Kiírja a konzolra a Top 10 játékost.
+     */
+    public void printHighScores() {
+<span class="nc" id="L52">        String query = &quot;SELECT NAME, WINS FROM HIGHSCORE ORDER BY WINS DESC LIMIT 10&quot;;</span>
+
+<span class="nc" id="L54">        System.out.println(&quot;\n=== HIGHSCORE TÁBLÁZAT ===&quot;);</span>
+<span class="nc" id="L55">        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);</span>
+<span class="nc" id="L56">             Statement stmt = conn.createStatement();</span>
+<span class="nc" id="L57">             ResultSet rs = stmt.executeQuery(query)) {</span>
+
+<span class="nc" id="L59">            int rank = 1;</span>
+<span class="nc" id="L60">            System.out.printf(&quot;%-5s %-20s %s%n&quot;, &quot;Hely&quot;, &quot;Név&quot;, &quot;Győzelmek&quot;);</span>
+<span class="nc" id="L61">            System.out.println(&quot;------------------------------------&quot;);</span>
+
+<span class="nc" id="L63">            boolean hasData = false;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            while (rs.next()) {</span>
+<span class="nc" id="L65">                hasData = true;</span>
+<span class="nc" id="L66">                String name = rs.getString(&quot;NAME&quot;);</span>
+<span class="nc" id="L67">                int wins = rs.getInt(&quot;WINS&quot;);</span>
+<span class="nc" id="L68">                System.out.printf(&quot;%-5d %-20s %d%n&quot;, rank++, name, wins);</span>
+<span class="nc" id="L69">            }</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            if (!hasData) {</span>
+<span class="nc" id="L72">                System.out.println(&quot;(Még nincs mentett eredmény)&quot;);</span>
+            }
+<span class="nc" id="L74">            System.out.println(&quot;==========================\n&quot;);</span>
+
+<span class="nc" id="L76">        } catch (SQLException e) {</span>
+<span class="nc" id="L77">            System.err.println(&quot;Hiba a lista lekérdezésekor: &quot; + e.getMessage());</span>
+<span class="nc" id="L78">        }</span>
+<span class="nc" id="L79">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

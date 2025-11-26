@@ -1,5 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Game.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">amobaMain</a> &gt; <a href="index.source.html" class="el_package">hu.unipg.amoba.game</a> &gt; <span class="el_source">Game.java</span></div><h1>Game.java</h1><pre class="source lang-java linenums">package hu.unipg.amoba.game;
 
-<span class="nc" id="L3">public class Game {</span>
+import hu.unipg.amoba.model.Board;
+import hu.unipg.amoba.model.Move;
+import hu.unipg.amoba.model.Player;
+import hu.unipg.amoba.model.Position;
+
+import java.util.Optional;
+
+public class Game {
+    private final Board board;
+    private Player current;
+    private final AiPlayer aiPlayer;
+
+<span class="fc" id="L15">    public Game (Board board) {</span>
+<span class="fc" id="L16">        this.board = board;</span>
+<span class="fc" id="L17">        this.current=Player.X;</span>
+<span class="fc" id="L18">        this.aiPlayer=new AiPlayer();</span>
+<span class="fc" id="L19">    }</span>
+
+    public Board getBoard() {
+<span class="fc" id="L22">        return board;</span>
+    }
+    public Player getCurrentPlayer() {
+<span class="fc" id="L25">        return current;</span>
+    }
+
+    public boolean playHumanMove(Position pos) {
+<span class="fc" id="L29">        Move move = new Move(pos, Player.X);</span>
+<span class="fc" id="L30">        boolean ok = board.applyMove(move);</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        if(ok) current =Player.O;</span>
+<span class="fc" id="L32">        return ok;</span>
+    }
+
+    public Move playAIMove() {
+<span class="fc" id="L36">        Move m= aiPlayer.pickRandomMove(board,Player.O);</span>
+<span class="fc" id="L37">        boolean ok = board.applyMove(m);</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        if(ok) current =Player.X;</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        return ok?m:null;</span>
+    }
+
+    public Optional&lt;Player&gt; checkWinner(Move lastMove) {
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">        if (lastMove == null) return Optional.empty();</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        return board.isWinningMove(lastMove) ? Optional.of(lastMove.player()) : Optional.empty();</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
