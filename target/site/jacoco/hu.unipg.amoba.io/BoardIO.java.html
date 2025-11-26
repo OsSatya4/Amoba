@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BoardIO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">amobaMain</a> &gt; <a href="index.source.html" class="el_package">hu.unipg.amoba.io</a> &gt; <span class="el_source">BoardIO.java</span></div><h1>BoardIO.java</h1><pre class="source lang-java linenums">package hu.unipg.amoba.io;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import hu.unipg.amoba.game.Game;
 import hu.unipg.amoba.model.Board;
 import hu.unipg.amoba.model.Move;
 import hu.unipg.amoba.model.Player;
@@ -12,38 +15,90 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-<span class="nc" id="L15">public class BoardIO {</span>
+<span class="nc" id="L18">public class BoardIO {</span>
+
+    // JSON mentés
+    public static void saveJson(Board board, Player currentPlayer, Path file) throws IOException {
+<span class="nc" id="L22">        ObjectMapper mapper = new ObjectMapper();</span>
+<span class="nc" id="L23">        mapper.enable(SerializationFeature.INDENT_OUTPUT);</span>
+
+
+<span class="nc" id="L26">        int rows = board.getRows();</span>
+<span class="nc" id="L27">        int cols = board.getCols();</span>
+<span class="nc" id="L28">        char[][] gridChars = new char[rows][cols];</span>
+
+<span class="nc bnc" id="L30" title="All 2 branches missed.">        for (int r = 0; r &lt; rows; r++) {</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">            for (int c = 0; c &lt; cols; c++) {</span>
+<span class="nc" id="L32">                Optional&lt;Player&gt; p = board.getOwner(r, c);</span>
+
+<span class="nc" id="L34">                gridChars[r][c] = p.map(Player::getSymbol).orElse(' ');</span>
+            }
+        }
+
+
+<span class="nc" id="L39">        GameState state = new GameState(rows, cols, gridChars, currentPlayer.getSymbol());</span>
+
+
+<span class="nc" id="L42">        mapper.writeValue(file.toFile(), state);</span>
+<span class="nc" id="L43">    }</span>
+
+
+    public static Game loadJson(Path file) throws IOException {
+<span class="nc" id="L47">        ObjectMapper mapper = new ObjectMapper();</span>
+
+
+<span class="nc" id="L50">        GameState state = mapper.readValue(file.toFile(), GameState.class);</span>
+
+
+<span class="nc" id="L53">        Board board = new Board(state.rows, state.cols);</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        for (int r = 0; r &lt; state.rows; r++) {</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            for (int c = 0; c &lt; state.cols; c++) {</span>
+<span class="nc" id="L56">                char symbol = state.grid[r][c];</span>
+<span class="nc bnc" id="L57" title="All 4 branches missed.">                if (symbol == 'x' || symbol == 'X') {</span>
+<span class="nc" id="L58">                    board.applyMove(new Move(Position.of(r, c), Player.X));</span>
+<span class="nc bnc" id="L59" title="All 4 branches missed.">                } else if (symbol == 'o' || symbol == 'O') {</span>
+<span class="nc" id="L60">                    board.applyMove(new Move(Position.of(r, c), Player.O));</span>
+                }
+            }
+        }
+
+
+
+<span class="nc" id="L67">        return new Game(board);</span>
+    }
+
 
     public static void save(Board board, Path file) throws IOException {
-<span class="nc" id="L18">        try (BufferedWriter w = Files.newBufferedWriter(file)) {</span>
-<span class="nc" id="L19">            w.write(board.getRows() + &quot; &quot; + board.getCols());</span>
-<span class="nc" id="L20">            w.newLine();</span>
-<span class="nc bnc" id="L21" title="All 2 branches missed.">            for (int r=0;r&lt;board.getRows();r++) {</span>
-<span class="nc bnc" id="L22" title="All 2 branches missed.">                for (int c=0;c&lt;board.getCols();c++) {</span>
-<span class="nc" id="L23">                    Optional&lt;Player&gt; p = board.getOwner(r,c);</span>
-<span class="nc" id="L24">                    w.write(String.valueOf(p.map(Player::getSymbol).orElse('.')));</span>
+<span class="nc" id="L72">        try (BufferedWriter w = Files.newBufferedWriter(file)) {</span>
+<span class="nc" id="L73">            w.write(board.getRows() + &quot; &quot; + board.getCols());</span>
+<span class="nc" id="L74">            w.newLine();</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">            for (int r=0;r&lt;board.getRows();r++) {</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">                for (int c=0;c&lt;board.getCols();c++) {</span>
+<span class="nc" id="L77">                    Optional&lt;Player&gt; p = board.getOwner(r,c);</span>
+<span class="nc" id="L78">                    w.write(String.valueOf(p.map(Player::getSymbol).orElse('.')));</span>
                 }
-<span class="nc" id="L26">                w.newLine();</span>
+<span class="nc" id="L80">                w.newLine();</span>
             }
         }
-<span class="nc" id="L29">    }</span>
+<span class="nc" id="L83">    }</span>
+
 
     public static Board load(Path file) throws IOException {
-<span class="nc" id="L32">        List&lt;String&gt; lines = Files.readAllLines(file);</span>
-<span class="nc bnc" id="L33" title="All 2 branches missed.">        if (lines.isEmpty()) throw new IOException(&quot;Empty file&quot;);</span>
-<span class="nc" id="L34">        String[] parts = lines.get(0).trim().split(&quot;\\s+&quot;);</span>
-<span class="nc" id="L35">        int rows = Integer.parseInt(parts[0]);</span>
-<span class="nc" id="L36">        int cols = Integer.parseInt(parts[1]);</span>
-<span class="nc" id="L37">        Board b = new Board(rows, cols);</span>
-<span class="nc bnc" id="L38" title="All 4 branches missed.">        for (int r=0;r&lt;rows &amp;&amp; r+1&lt;lines.size(); r++) {</span>
-<span class="nc" id="L39">            String line = lines.get(r+1);</span>
-<span class="nc bnc" id="L40" title="All 4 branches missed.">            for (int c=0;c&lt;cols &amp;&amp; c&lt;line.length(); c++) {</span>
-<span class="nc" id="L41">                char ch = line.charAt(c);</span>
-<span class="nc bnc" id="L42" title="All 4 branches missed.">                if (ch == 'x' || ch == 'X') b.applyMove(new Move(new Position(r,c), Player.X));</span>
-<span class="nc bnc" id="L43" title="All 4 branches missed.">                else if (ch == 'o' || ch == 'O') b.applyMove(new Move(new Position(r,c), Player.O));</span>
+<span class="nc" id="L87">        List&lt;String&gt; lines = Files.readAllLines(file);</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        if (lines.isEmpty()) throw new IOException(&quot;Empty file&quot;);</span>
+<span class="nc" id="L89">        String[] parts = lines.get(0).trim().split(&quot;\\s+&quot;);</span>
+<span class="nc" id="L90">        int rows = Integer.parseInt(parts[0]);</span>
+<span class="nc" id="L91">        int cols = Integer.parseInt(parts[1]);</span>
+<span class="nc" id="L92">        Board b = new Board(rows, cols);</span>
+<span class="nc bnc" id="L93" title="All 4 branches missed.">        for (int r=0;r&lt;rows &amp;&amp; r+1&lt;lines.size(); r++) {</span>
+<span class="nc" id="L94">            String line = lines.get(r+1);</span>
+<span class="nc bnc" id="L95" title="All 4 branches missed.">            for (int c=0;c&lt;cols &amp;&amp; c&lt;line.length(); c++) {</span>
+<span class="nc" id="L96">                char ch = line.charAt(c);</span>
+<span class="nc bnc" id="L97" title="All 4 branches missed.">                if (ch == 'x' || ch == 'X') b.applyMove(new Move(new Position(r,c), Player.X));</span>
+<span class="nc bnc" id="L98" title="All 4 branches missed.">                else if (ch == 'o' || ch == 'O') b.applyMove(new Move(new Position(r,c), Player.O));</span>
             }
         }
-<span class="nc" id="L46">        return b;</span>
+<span class="nc" id="L101">        return b;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

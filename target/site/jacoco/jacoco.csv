@@ -4,8 +4,9 @@ amobaMain,hu.unipg.amoba.model,Move,0,9,0,0,0,1,0,1,0,1
 amobaMain,hu.unipg.amoba.model,Player,10,25,2,0,2,4,3,2,2,2
 amobaMain,hu.unipg.amoba.model,Board,222,502,50,82,24,67,43,35,5,7
 amobaMain,hu.unipg.amoba.model,Cell,10,20,2,2,1,4,2,5,1,4
-amobaMain,hu.unipg.amoba.io,BoardIO,159,0,22,0,23,0,14,0,3,0
+amobaMain,org,Main,255,0,28,0,66,0,16,0,2,0
+amobaMain,hu.unipg.amoba.io,BoardIO,304,0,38,0,46,0,24,0,5,0
 amobaMain,hu.unipg.amoba.io,HighscoreDao,150,0,4,0,42,0,5,0,3,0
+amobaMain,hu.unipg.amoba.io,GameState,18,0,0,0,7,0,2,0,2,0
 amobaMain,hu.unipg.amoba.game,AiPlayer,3,29,1,1,1,6,1,2,0,2
 amobaMain,hu.unipg.amoba.game,Game,4,72,4,6,0,17,4,7,0,6
-amobaMain,hu.unipg.amoba,Main,255,0,28,0,66,0,16,0,2,0
