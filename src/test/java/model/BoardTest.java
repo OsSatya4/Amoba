@@ -11,14 +11,22 @@ public class BoardTest {
 
     @Test
     void fourInRowHorizontalWins() {
-        Board b = new Board(6,6);
+        Board b = new Board(10, 10);
 
-        for (int c=1;c<=4;c++) {
-            boolean applied = b.applyMove(new Move(Position.of(1,c), Player.X));
-            assertTrue(applied);
-        }
+        b.applyMove(new Move(Position.of(4, 4), Player.X));
 
-        assertTrue(b.isWinningMove(new Move(Position.of(1,3), Player.X)));
+        b.applyMove(new Move(Position.of(5, 5), Player.O));
+
+
+        assertTrue(b.applyMove(new Move(Position.of(4, 5), Player.X))); // X 2.
+        assertTrue(b.applyMove(new Move(Position.of(5, 6), Player.O))); // O
+        assertTrue(b.applyMove(new Move(Position.of(4, 6), Player.X))); // X 3.
+        assertTrue(b.applyMove(new Move(Position.of(5, 7), Player.O))); // O
+
+        Move winningMove = new Move(Position.of(4, 7), Player.X);
+        assertTrue(b.applyMove(winningMove), "A nyerő lépésnek érvényesnek kell lennie.");
+
+        assertTrue(b.isWinningMove(winningMove), "Vízszintes 4-esnek nyernie kell.");
     }
 
     @Test
