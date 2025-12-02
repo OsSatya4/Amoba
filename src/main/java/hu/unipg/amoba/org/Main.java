@@ -1,8 +1,12 @@
-package hu.unipg.amoba.model;
+package hu.unipg.amoba.org;
 
 import hu.unipg.amoba.game.Game;
 import hu.unipg.amoba.io.BoardIO;
 import hu.unipg.amoba.io.HighscoreDao;
+import hu.unipg.amoba.model.Board;
+import hu.unipg.amoba.model.Player;
+import hu.unipg.amoba.model.Move;
+import hu.unipg.amoba.model.Position;
 
 import java.io.IOException;
 import java.nio.file.Files;

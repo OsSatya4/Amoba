@@ -76,7 +76,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>hu.unipg.amoba.model.Main</mainClass>
+                            <mainClass>hu.unipg.amoba.org.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -92,7 +92,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>hu.unipg.amoba.model.Main</mainClass>
+                            <mainClass>hu.unipg.amoba.org.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
